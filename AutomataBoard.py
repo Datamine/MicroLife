@@ -4,48 +4,7 @@ John Loeber | contact@johnloeber.com | Dec 17 2016 | Python 3.6.0
 """
 
 import random
-from Utilities.vector import Vector
-
-class Cell(object):
-    """
-    represents a single cell in an organism.
-    """
-
-    def __init__(self, position, parent_organism, energy_stored, energy_required):
-        """
-        set the following instance variables:
-            - position: Vector, position in the x/y plane
-            - parent_organism: Organism, the parent organism of the cell
-            - energy_stored: float, the amount of energy stored by the cell
-            - energy_required: float, amount of energy the cell requires to live for a timestep
-        """
-
-        self.position = position
-        self.parent_organism = parent_organism
-        self.energy_stored = energy_stored
-        self.energy_required = energy_required
-
-    def available_adjacent_spaces(self):
-        """
-        returns list of empty spaces adjacent (not diagonally) to this cell
-        """
-
-        directions = [Vector(0,1), Vector(0,-1), Vector(1, 0), Vector(-1, 0)]
-        potential_locs = [self.position + v for v in directions]
-        return [self.parent_organism.parent_board[v.x][v.y] == None for v in potential_locs]
-
-    def has_available_adjacent_space(self):
-        """
-        return True if there's at least one empty space (not diagonally) adjacent
-        to this cell, False otherwise
-        """
-        return any(self.available_adjacent_spaces())
-
-    def pick_available_adjacent_space(self):
-        """
-        returns a random empty space adjacent to this cell (not diagonally)
-        """
-        return random.choice(self.available_adjacent_spaces())
+from Cell import Cell
 
 class Organism(object):
     """
@@ -58,16 +17,21 @@ class Organism(object):
             - parent_board: Board, the board that contains this organism
             - p_cell_death: float, the probability for a given cell to die on a timestep
             - cells: list of Cell, the cells that the organism contains
-            - total_energy: float, the sum of the energy stored in all the constituent cells
         """
 
         self.parent_board = parent_board
         self.p_cell_death = p_cell_death
         self.cells = []
-        self.total_energy = 0
 
         # spawn the initial cell
         self.spawn_cell()
+
+    def total_energy(self):
+        """
+        returns the total energy stored in all the organism's constituent cells
+        """
+
+        return sum(c.energy_stored for c in self.cells)
 
     def spawn_cell(self):
         """
@@ -88,19 +52,26 @@ class Organism(object):
                             energy_stored=100, energy_required=1)
             self.cells.append(new_cell)
 
-    def timestep(self, movement):
+    def cell_deaths(self):
         """
-        movement (type: class Vector)
-        the movement is a standard unit vector, i.e. (0,1), (1,0), (0,-1), (-1,0)
+        handle cell deaths
         """
 
-        # handle cell deaths
         live_cells = []
-
         for cell in self.cells:
-            if random() > self.p_cell_death:
+            if random.random() > self.p_cell_death:
                 live_cells.append(cell)
+        self.cells = live_cells
 
+    def timestep(self):
+        """
+        handle the events that happen between timesteps:
+        cell death and org movement
+        """
+
+        self.cell_deaths()
+
+    """
         # handle cell movement
         live_cell_energy = get_energy(live_cells)
 
@@ -108,7 +79,6 @@ class Organism(object):
 
         for cell in live_cells:
             if self.isMovable(cell)
-
 
         return
 
@@ -119,6 +89,7 @@ class Organism(object):
         if 0 <= new_x < self.parent_board.size_x and 0 <= new_y < self.parent_board.size_y:
             # gotta figure out how to consume food, objects, etc.
         return False
+    """
 
 class Board(object):
     """
@@ -171,8 +142,3 @@ def get_energy(cells):
     return sum(cell.energy_stored for cell in cells)
 
 
-def append_item_or_list_to_list(to_append, _list):
-    if type(to_append) == list:
-        _list += to_append
-    else:
-        _list.append(to_append)
