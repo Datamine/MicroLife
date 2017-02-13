@@ -23,7 +23,7 @@ class Board(object):
         self.visualization = False
         self.screen = None
 
-        self.spawn_organisms(5)
+        self.spawn_organisms(1)
 
     def get_random_empty_square(self):
         """

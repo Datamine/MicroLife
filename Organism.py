@@ -67,7 +67,7 @@ class Organism(object):
         """
 
         self.cell_deaths()
-        for _ in range(10):
+        for _ in range(20):
             self.spawn_cell()
 
         for cell in self.cells:
