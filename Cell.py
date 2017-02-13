@@ -17,7 +17,8 @@ class Cell(object):
             - energy_required: float, amount of energy the cell requires to live for a timestep
         """
 
-        self.position = position
+        # position is passed in as a regular old tuple RN -- must fix
+        self.position = Vector(position[0], position[1])
         self.parent_organism = parent_organism
         self.energy_stored = energy_stored
         self.energy_required = energy_required
@@ -29,7 +30,7 @@ class Cell(object):
 
         directions = [Vector(0,1), Vector(0,-1), Vector(1, 0), Vector(-1, 0)]
         potential_locs = [self.position + v for v in directions]
-        return [self.parent_organism.parent_board[v.x][v.y] == None for v in potential_locs]
+        return [(v.x, v.y) for v in potential_locs if self.parent_organism.parent_board.board[v.x][v.y] == None]
 
     def has_available_adjacent_space(self):
         """
